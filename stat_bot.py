@@ -6,15 +6,15 @@ import statsmodels.api as sm
 import matplotlib.pyplot as plt
 import seaborn as sns
 import spacy
+from pathlib import Path
 
+# Load the German NLP model from a local directory
 try:
-    # Try to load the German model
-    nlp = spacy.load("de_core_news_sm")
+    model_path = Path(__file__).parent / "models" / "de_core_news_sm"
+    nlp = spacy.load(model_path)
 except OSError:
-    # If the model is not installed, download it
-    from spacy.cli import download
-    download("de_core_news_sm")
-    nlp = spacy.load("de_core_news_sm")
+    st.error("The German NLP model 'de_core_news_sm' is missing. Please ensure the model is available in the 'models' folder.")
+    st.stop()
 
 # Define keywords for each statistical test
 keywords = {
@@ -37,7 +37,7 @@ def identify_test(text):
                 detected_tests.append(test)
     return set(detected_tests)
 
-# Function for z-Test
+# Statistical test functions
 def perform_z_test(sample, pop_mean, pop_std):
     z_stat = (np.mean(sample) - pop_mean) / (pop_std / np.sqrt(len(sample)))
     p_value = 2 * (1 - stats.norm.cdf(abs(z_stat)))
@@ -48,7 +48,6 @@ def perform_z_test(sample, pop_mean, pop_std):
     )
     return z_stat, p_value, explanation
 
-# Function for 1-sample t-Test
 def perform_t_test_1sample(sample, pop_mean):
     t_stat, p_value = stats.ttest_1samp(sample, pop_mean)
     explanation = (
@@ -57,7 +56,6 @@ def perform_t_test_1sample(sample, pop_mean):
     )
     return t_stat, p_value, explanation
 
-# Function for 2-sample t-Test
 def perform_t_test_2sample(sample1, sample2):
     t_stat, p_value = stats.ttest_ind(sample1, sample2, equal_var=False)
     explanation = (
@@ -66,7 +64,6 @@ def perform_t_test_2sample(sample1, sample2):
     )
     return t_stat, p_value, explanation
 
-# Function for Wilcoxon test
 def perform_wilcoxon(sample1, sample2):
     stat, p_value = stats.wilcoxon(sample1, sample2)
     explanation = (
@@ -74,33 +71,6 @@ def perform_wilcoxon(sample1, sample2):
         f"Hier ergibt sich ein Wilcoxon-Statistik-Wert von {stat:.4f} mit einem p-Wert von {p_value:.4f}."
     )
     return stat, p_value, explanation
-
-# Function for ANOVA (1-factor)
-def perform_anova_1way(*groups):
-    f_stat, p_value = stats.f_oneway(*groups)
-    explanation = (
-        f"Die einfaktorielle ANOVA vergleicht Mittelwerte über mehrere Gruppen hinweg. "
-        f"Das F-Statistik-Ergebnis ist {f_stat:.4f}, das die Varianz zwischen Gruppen misst."
-    )
-    return f_stat, p_value, explanation
-
-# Function for Chi-Square Test
-def perform_chi_square(observed):
-    chi2_stat, p_value, dof, expected = stats.chi2_contingency(observed)
-    explanation = (
-        f"Der Chi-Quadrat-Test prüft, ob beobachtete Häufigkeiten signifikant von erwarteten Häufigkeiten abweichen. "
-        f"Das Ergebnis: χ²={chi2_stat:.4f}, Freiheitsgrade={dof}, p-Wert={p_value:.4f}."
-    )
-    return chi2_stat, p_value, explanation
-
-# Function for Spearman Correlation
-def perform_spearman_corr(x, y):
-    corr, p_value = stats.spearmanr(x, y)
-    explanation = (
-        f"Die Spearman-Korrelation misst die Rangbeziehung zwischen zwei Variablen. "
-        f"Das Ergebnis: Korrelationskoeffizient={corr:.4f}, p-Wert={p_value:.4f}."
-    )
-    return corr, p_value, explanation
 
 # Streamlit UI
 st.title("📊 Erweiterter Statistik-Bot mit Erklärung")
