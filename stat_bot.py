@@ -7,8 +7,14 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import spacy
 
-# Load German NLP model
-nlp = spacy.load("de_core_news_sm")
+try:
+    # Try to load the German model
+    nlp = spacy.load("de_core_news_sm")
+except OSError:
+    # If the model is not installed, download it
+    from spacy.cli import download
+    download("de_core_news_sm")
+    nlp = spacy.load("de_core_news_sm")
 
 # Define keywords for each statistical test
 keywords = {
