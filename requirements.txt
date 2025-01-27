@@ -4,4 +4,5 @@ pandas
 numpy
 matplotlib
 seaborn
-spacy
+statsmodels
+spacy  # Include this only if your app uses it
