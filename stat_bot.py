@@ -9,6 +9,11 @@ import spacy
 from pathlib import Path
 
 # Load the German NLP model from a local directory
+model_path = Path(__file__).parent / "models" / "de_core_news_sm"
+
+# Debug print to check the path
+st.write(f"Loading SpaCy model from: {model_path.resolve()}")
+
 try:
     model_path = Path(__file__).parent / "models" / "de_core_news_sm"
     nlp = spacy.load(model_path)
