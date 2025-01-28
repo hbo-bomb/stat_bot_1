@@ -6,5 +6,5 @@ matplotlib
 seaborn
 statsmodels
 spacy
-de-core-news-sm
+
 
