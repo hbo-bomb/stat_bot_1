@@ -13,18 +13,29 @@ MODEL_NAME = "de_core_news_sm"
 
 # Function to download and verify the model
 def ensure_spacy_model():
-    try:
-        # Try to load the model
-        return spacy.load(MODEL_NAME)
-    except OSError:
+    model_dir = f"/home/adminuser/.local/lib/python3.12/site-packages/spacy/data/{MODEL_NAME}"
+
+    # Force re-download if the model is missing
+    if not os.path.exists(model_dir):
         st.warning(f"Model '{MODEL_NAME}' not found. Downloading now...")
         subprocess.run(["python", "-m", "spacy", "download", MODEL_NAME], check=True)
-        return spacy.load(MODEL_NAME)  # Reload after download
+
+        # Set environment variable so SpaCy can find it
+        os.environ["SPACY_DATA"] = "/home/adminuser/.local/lib/python3.12/site-packages/spacy/data"
+
+    try:
+        nlp = spacy.load(MODEL_NAME)
+        st.success(f"SpaCy model '{MODEL_NAME}' loaded successfully!")
+        return nlp
+    except OSError as e:
+        st.error(f"Failed to load the model. Error: {e}")
+        st.stop()
 
 # Load model
 nlp = ensure_spacy_model()
 
 st.success("SpaCy model loaded successfully!")
+
 
 
 # Define keywords for each statistical test
