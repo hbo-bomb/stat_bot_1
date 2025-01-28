@@ -5,4 +5,6 @@ numpy
 matplotlib
 seaborn
 statsmodels
-spacy  # Include this only if your app uses it
+spacy
+de-core-news-sm
+
