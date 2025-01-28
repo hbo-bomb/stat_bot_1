@@ -6,20 +6,18 @@ import statsmodels.api as sm
 import matplotlib.pyplot as plt
 import seaborn as sns
 import spacy
-from pathlib import Path
+import subprocess
+import streamlit as st
 
-# Load the German NLP model from a local directory
-model_path = Path(__file__).parent / "models" / "de_core_news_sm"
-
-# Debug print to check the path
-st.write(f"Loading SpaCy model from: {model_path.resolve()}")
-
+# Try to load the model directly
 try:
-    model_path = Path(__file__).parent / "models" / "de_core_news_sm"
-    nlp = spacy.load(model_path)
+    nlp = spacy.load("de_core_news_sm")
 except OSError:
-    st.error("The German NLP model 'de_core_news_sm' is missing. Please ensure the model is available in the 'models' folder.")
-    st.stop()
+    st.warning("Model not found. Downloading...")
+    subprocess.run(["python", "-m", "spacy", "download", "de_core_news_sm"])
+    nlp = spacy.load("de_core_news_sm")
+
+st.success("SpaCy model loaded successfully!")
 
 # Define keywords for each statistical test
 keywords = {
