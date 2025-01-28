@@ -7,15 +7,22 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import spacy
 import subprocess
-import streamlit as st
+import os
 
-# Try to load the model directly
-try:
-    nlp = spacy.load("de_core_news_sm")
-except OSError:
-    st.warning("Model not found. Downloading...")
-    subprocess.run(["python", "-m", "spacy", "download", "de_core_news_sm"])
-    nlp = spacy.load("de_core_news_sm")
+MODEL_NAME = "de_core_news_sm"
+
+# Function to download and verify the model
+def ensure_spacy_model():
+    try:
+        # Try to load the model
+        return spacy.load(MODEL_NAME)
+    except OSError:
+        st.warning(f"Model '{MODEL_NAME}' not found. Downloading now...")
+        subprocess.run(["python", "-m", "spacy", "download", MODEL_NAME], check=True)
+        return spacy.load(MODEL_NAME)  # Reload after download
+
+# Load model
+nlp = ensure_spacy_model()
 
 st.success("SpaCy model loaded successfully!")
 
